@@ -35,6 +35,7 @@ func SetupController(route *mux.Route) {
 	metrics.RegisterHandler("/favorite/", AddProfileFavorite, "POST", router)
 	metrics.RegisterHandler("/favorite/", RemoveProfileFavorite, "DELETE", router)
 
+	metrics.RegisterHandler("/listFName/{fname}/", GetProfilesByFName, "GET", router)
 	metrics.RegisterHandler("/{id}/", GetProfileById, "GET", router)
 
 	metrics.RegisterHandler("/tier/threshold/", GetTierThresholds, "GET", router)
@@ -61,6 +62,17 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(user_profile)
+}
+
+func GetProfilesByFName(w http.ResponseWriter, r *http.Request) {
+	fname := mux.Vars(r)["fname"]
+	filtered_profile_list, err := service.GetProfilesByFName(fname)
+	if err != nil {
+		errors.WriteError(w, r, errors.DatabaseError(err.Error(), "Could not get the requested profiles."))
+		return
+	}
+
+	json.NewEncoder(w).Encode(filtered_profile_list)
 }
 
 /*

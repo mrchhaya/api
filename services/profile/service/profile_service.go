@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"strconv"
+	"fmt"
 
 	"github.com/HackIllinois/api/common/database"
 	"github.com/HackIllinois/api/common/utils"
@@ -247,6 +248,30 @@ func GetProfileLeaderboard(parameters map[string][]string) (*models.LeaderboardE
 	}
 
 	return &leaderboard_entry_list, nil
+}
+
+/*
+	Returns a list of profiles filtered upon first name
+*/
+
+func GetProfilesByFName(fname string) (*models.ProfileList, error) {
+	query := database.QuerySelector{
+		"firstname": fname,
+	}
+
+	profiles := []models.Profile{}
+	err := db.FindAll("profiles", query, &profiles, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	profile_list := models.ProfileList{
+		Profiles: profiles,
+	}
+
+	return &profile_list, nil
+	
 }
 
 /*
